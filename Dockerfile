@@ -12,6 +12,10 @@ RUN npx prisma generate && npm run build
 
 RUN mkdir -p /app/uploads
 
+COPY start.sh /app/start.sh
+
+RUN chmod +x /app/start.sh
+
 EXPOSE 3000
 
-CMD ["sh", "-c", "node dist/server.js & node dist/queue/analysis.worker.js & wait"]
+CMD ["/app/start.sh"]
