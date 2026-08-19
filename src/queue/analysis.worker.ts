@@ -5,12 +5,26 @@ import { env } from '../config/env';
 import { handleAnalysisJob } from './job-handler';
 import { logger } from '../utils/logger';
 
-const worker = new Worker('image-analysis', handleAnalysisJob, { connection: redis, concurrency: env.WORKER_CONCURRENCY });
+const worker = new Worker(
+  'image-analysis',
+  handleAnalysisJob,
+  {
+    connection: redis,
+    concurrency: env.WORKER_CONCURRENCY
+  }
+);
+
+logger.info(
+  { concurrency: env.WORKER_CONCURRENCY },
+  'Image analysis worker started'
+);
+
 async function close(): Promise<void> {
   logger.info('Shutting down worker');
   await worker.close();
   await redis.quit();
   await prisma.$disconnect();
 }
+
 process.on('SIGTERM', close);
 process.on('SIGINT', close);
