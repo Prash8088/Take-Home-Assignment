@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProcessingStatus {
+  pending
+  processing
+  completed
+  failed
+}
+
+model Media {
+  id               String          @id
+  originalFilename String
+  storedFilename   String          @unique
+  storagePath      String          @unique
+  mimeType         String
+  fileSize         Int
+  width            Int?
+  height           Int?
+  fileHash         String          @unique
+  perceptualHash   String?
+  metadata         Json?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  jobs             ProcessingJob[]
+
+  @@index([perceptualHash])
+}
+
+model ProcessingJob {
+  id           String           @id
+  mediaId      String
+  status       ProcessingStatus @default(pending)
+  attempts     Int              @default(0)
+  errorCode    String?
+  errorMessage String?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  media        Media            @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  result       AnalysisResult?
+
+  @@index([mediaId, status])
+}
+
+model AnalysisResult {
+  id           String        @id @default(cuid())
+  processingId String        @unique
+  overallRisk  String
+  result       Json
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  job          ProcessingJob @relation(fields: [processingId], references: [id], onDelete: Cascade)
+}

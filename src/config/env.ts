@@ -1,0 +1,4 @@
+import 'dotenv/config';
+import { z } from 'zod';
+const schema = z.object({ DATABASE_URL:z.string().min(1), REDIS_URL:z.string().url(), PORT:z.coerce.number().default(3000), UPLOAD_DIR:z.string().default('uploads'), MAX_FILE_SIZE_MB:z.coerce.number().positive().default(10), MIN_IMAGE_WIDTH:z.coerce.number().positive().default(320), MIN_IMAGE_HEIGHT:z.coerce.number().positive().default(240), BLUR_THRESHOLD:z.coerce.number().positive().default(100), LOW_BRIGHTNESS_THRESHOLD:z.coerce.number().min(0).max(255).default(55), OVEREXPOSURE_THRESHOLD:z.coerce.number().min(0).max(255).default(220), MAX_JOB_ATTEMPTS:z.coerce.number().int().positive().default(3), WORKER_CONCURRENCY:z.coerce.number().int().positive().default(2), NODE_ENV:z.enum(['development','test','production']).default('development'), CORS_ORIGIN:z.string().default('*') });
+export const env = schema.parse(process.env);
