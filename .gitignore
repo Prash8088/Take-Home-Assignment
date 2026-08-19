@@ -4,4 +4,4 @@ dist/
 uploads/*
 !uploads/.gitkeep
 .test-uploads/
-.env.example
+!.env.example
