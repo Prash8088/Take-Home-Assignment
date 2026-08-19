@@ -14,4 +14,4 @@ RUN mkdir -p /app/uploads
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node dist/server.js & node dist/queue/analysis.worker.js & wait -n"]
+CMD ["sh", "-c", "node dist/server.js & node dist/queue/analysis.worker.js & wait"]
